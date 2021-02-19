@@ -12,7 +12,7 @@
     'use strict';
     console.log("Auto Download Script is Initiated")
     var script = document.createElement('script'); 
-    script.src = 'https://www.github.com/';
+    script.src = 'https://raw.githubusercontent.com/Varunalingam/teams-auto-download/master/AutoDownload.js';
     script.type = 'text/javascript'; 
     document.getElementsByTagName('body')[0].appendChild(script); 
     function wait() { 
