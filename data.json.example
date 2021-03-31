@@ -1,0 +1,25 @@
+{
+    "email": "email@example.com",
+    "password": "password",
+    "base_download_path": "",
+    "base_save_path": "",
+    "local_teams_config": [
+        {
+            "team_name": "TEAM 1", 
+            "team_code": "CODE", 
+            "matching_conditions": {
+                "min_time": -1,
+                "max_time": 100,
+                "days":[1,2],
+                "strings": ["A", "B"]
+            },
+            "team_save_location": "",
+            "mandatory_conditions": {
+                "min_time": -1,
+                "max_time": -1,
+                "days":[],
+                "strings":[]
+            }
+        }
+    ]
+}

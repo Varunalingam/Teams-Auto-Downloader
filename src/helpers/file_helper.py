@@ -2,11 +2,14 @@ import json
 import os
 from types import SimpleNamespace
 
-def load_json(filename, base_path):
+def load_json(filename, base_path, as_dict = False):
     config = None
     if os.path.exists(base_path + "\\" + filename):
         with open(base_path + "\\" +filename) as json_data_file:
-            config = json.loads(json_data_file.read(), object_hook=lambda d: SimpleNamespace(**d))
+            if not as_dict:
+                config = json.loads(json_data_file.read(), object_hook=lambda d: SimpleNamespace(**d))
+            else:
+                config = json.load(json_data_file)
             json_data_file.close()
     return config
 

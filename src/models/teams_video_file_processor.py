@@ -25,8 +25,7 @@ class TeamsVideoFileProcessor:
             if not os.path.exists(dir + '\\cache.json'):
                 save_data_as_json('cache.json', dir, {})
             
-
-            config = load_json('cache.json', dir)
+            config = load_json('cache.json', dir, as_dict=True)
             
             if not str(self.file.absolute()) in config.keys():
                 ret = True
