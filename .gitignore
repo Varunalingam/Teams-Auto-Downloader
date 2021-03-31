@@ -6,4 +6,18 @@
 *.code-workspace
 
 # Local History for Visual Studio Code
+
+
 .history/
+data.txt
+log.txt
+data.json
+cache.json
+# Project Orient Files
+
+
+__pycache__/
+*.py[cod]
+*$py.class
+.cache/
+# Byte-compiled / optimized / DLL files
