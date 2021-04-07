@@ -1,5 +1,5 @@
 import time
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 from selenium.common import exceptions
 from selenium import webdriver
@@ -7,7 +7,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 
 from src.helpers.browser_helper import wait_until_found
-
 
 class Channel:
     def __init__(self, name, c_id, browser, element):
@@ -95,6 +94,11 @@ class Team:
                 except exceptions.NoSuchElementException:
                     pass
                 except:
+                    print(''.join(date_string) + ' ' + str(date_obj) + ' Only this date string is found!')
+                    if ''.join(date_string).__contains__('Yesterday'):
+                        date_obj = datetime.now().date() - timedelta(days=1)
+                    elif ''.join(date_string).__contains__('Today'):
+                        date_obj = datetime.now().date()
                     pass
                 
                 if not date_obj > until:
@@ -112,6 +116,7 @@ class Team:
             chats.reverse()
 
             for chat in chats:
+                print(str(chat.get_attribute('data-scroll-pos')) + 'USING DATE' + str(next_date))
                 if next_date > until:
                     try:
                         subs = chat.find_elements_by_class_name('media message-body acc-thread-focusable expand-collapse')
@@ -131,10 +136,14 @@ class Team:
                 try:
                     date = chat.find_element_by_css_selector('div.message-list-divider.date-separator')
                     date_string = date.find_element_by_css_selector('div.message-list-divider-text.app-font-caption.app-font-base-bold').text.split(' ')
-                    date_obj = datetime(int(date_string[2]),months[int(date_string[0])], int(date_string[1].replace(',',''))).date()
+                    date_obj = datetime(int(date_string[2]),months[date_string[0]], int(date_string[1].replace(',',''))).date()
                 except exceptions.NoSuchElementException:
                     pass
                 except:
+                    if ''.join(date_string).__contains__('Yesterday'):
+                        date_obj = datetime.now().date() - timedelta(days=1)
+                    elif ''.join(date_string).__contains__('Today'):
+                        date_obj = datetime.now().date()
                     pass
 
                 next_date = date_obj
@@ -220,6 +229,8 @@ class Browser:
         teams_button = wait_until_found(self.browser, "button.app-bar-link > ng-include > svg.icons-teams", 5)
         if teams_button is not None:
             teams_button.click()
+        else:
+            print('Browser Preparation Failed!')
     
     def get_all_teams(self):
         team_elems = self.browser.find_elements_by_css_selector("ul>li[role='treeitem']>div[sv-element]")
