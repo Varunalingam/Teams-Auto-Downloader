@@ -119,7 +119,7 @@ class Team:
                 print(str(chat.get_attribute('data-scroll-pos')) + 'USING DATE' + str(next_date))
                 if next_date > until:
                     try:
-                        subs = chat.find_elements_by_class_name('media message-body acc-thread-focusable expand-collapse')
+                        subs = chat.find_elements_by_css_selector('div.media.message-body.acc-thread-focusable.expand-collapse')
                         for s in subs:
                             if not s.get_attribute('title') == 'Collapse all':
                                 s.click()
