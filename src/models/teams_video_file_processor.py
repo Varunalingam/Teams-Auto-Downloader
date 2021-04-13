@@ -1,5 +1,5 @@
 import pathlib
-from datetime import datetime
+from datetime import datetime, timedelta
 import sys
 import os
 
@@ -31,7 +31,8 @@ class TeamsVideoFileProcessor:
                 ret = True
                 startFrame = 0
                 self.data = []
-                while(ret):
+                startTime = datetime.now()
+                while(ret and datetime.now() - startTime < timedelta(seconds=20)):
                     ret, texts = textFromVideo(str(self.file.absolute()),['Microsoft Teams'],startFrame, startFrame + 10)
                     self.data += texts
                     startFrame += 10

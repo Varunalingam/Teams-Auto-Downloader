@@ -70,16 +70,16 @@ class LocalTeam:
         match_factor = 0
         if self.data.mandatory_conditions.min_time > 0:
             match_factor += 1
-            if file.get_video_length() > self.data.mandatory_conditions.min_time:
+            if file.get_video_length() > self.data.mandatory_conditions.min_time * 60:
                 match += 1
         if self.data.mandatory_conditions.max_time > 0:
             match_factor += 1
-            if file.get_video_length() < self.data.mandatory_conditions.max_time:
+            if file.get_video_length() < self.data.mandatory_conditions.max_time * 60:
                 match += 1
         match_factor += 1 if len(self.data.mandatory_conditions.days) > 0 else 0
         for day in self.data.mandatory_conditions.days:
             if int(file.get_time().weekday()) == int(day):
-                match_factor += 1
+                match += 1
                 break
         match_factor += 1 if len(self.data.mandatory_conditions.strings) > 0 else 0
         text_match = 0
@@ -87,7 +87,7 @@ class LocalTeam:
         for text in file.get_processed_data():
             if any (phrase.lower() in text.lower() for phrase in self.data.mandatory_conditions.strings):
                 text_match += 1
-        match += text_match/text_match_factor
+        match += float(text_match)/float(text_match_factor)
         if match_factor > 0:
             return float((float(match)/match_factor) - 0.5)
         return 0
@@ -97,16 +97,16 @@ class LocalTeam:
         match_factor = 0
         if self.data.matching_conditions.min_time > 0:
             match_factor += 1
-            if file.get_video_length() > self.data.matching_conditions.min_time:
+            if file.get_video_length() > self.data.matching_conditions.min_time * 60:
                 match += 1
         if self.data.matching_conditions.max_time > 0:
             match_factor += 1
-            if file.get_video_length() < self.data.matching_conditions.max_time:
+            if file.get_video_length() < self.data.matching_conditions.max_time * 60:
                 match += 1
         match_factor += 1 if len(self.data.matching_conditions.days) > 0 else 0
         for day in self.data.matching_conditions.days:
             if int(file.get_time().weekday()) == int(day):
-                match_factor += 1
+                match += 1
                 break
         match_factor += 1 if len(self.data.matching_conditions.strings) > 0 else 0
         text_match = 0
@@ -114,7 +114,7 @@ class LocalTeam:
         for text in file.get_processed_data():
             if any (phrase.lower() in text.lower() for phrase in self.data.matching_conditions.strings):
                 text_match += 1
-        match += text_match/text_match_factor
+        match += float(text_match)/float(text_match_factor)
         if match_factor > 0:
             return float((float(match)/match_factor))
         return 0
@@ -175,7 +175,7 @@ class LocalTeamManager:
             greatest = possibles[0]
             if len(possibles) > 1:
                 for localTeam in possibles:
-                    match_q[localTeam] = localTeam.get_mandatory_matching_quotient(processor) + localTeam.get_matching_quotient(processor)
+                    match_q[localTeam] = (2 * localTeam.get_mandatory_matching_quotient(processor)) + localTeam.get_matching_quotient(processor)
                 
                 greatest = None
                 for key in match_q.keys():
