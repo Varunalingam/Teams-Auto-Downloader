@@ -70,11 +70,11 @@ class LocalTeam:
         match_factor = 0
         if self.data.mandatory_conditions.min_time > 0:
             match_factor += 1
-            if file.get_video_length() > self.data.mandatory_conditions.min_time * 60:
+            if file.get_video_length() > int(self.data.mandatory_conditions.min_time * 60):
                 match += 1
         if self.data.mandatory_conditions.max_time > 0:
             match_factor += 1
-            if file.get_video_length() < self.data.mandatory_conditions.max_time * 60:
+            if file.get_video_length() < int(self.data.mandatory_conditions.max_time * 60):
                 match += 1
         match_factor += 1 if len(self.data.mandatory_conditions.days) > 0 else 0
         for day in self.data.mandatory_conditions.days:
@@ -97,11 +97,11 @@ class LocalTeam:
         match_factor = 0
         if self.data.matching_conditions.min_time > 0:
             match_factor += 1
-            if file.get_video_length() > self.data.matching_conditions.min_time * 60:
+            if file.get_video_length() > int(self.data.matching_conditions.min_time * 60):
                 match += 1
         if self.data.matching_conditions.max_time > 0:
             match_factor += 1
-            if file.get_video_length() < self.data.matching_conditions.max_time * 60:
+            if file.get_video_length() < int(self.data.matching_conditions.max_time * 60):
                 match += 1
         match_factor += 1 if len(self.data.matching_conditions.days) > 0 else 0
         for day in self.data.matching_conditions.days:
