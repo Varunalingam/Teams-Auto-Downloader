@@ -1,12 +1,13 @@
 import pathlib
+import shutil
+from os.path import getsize
+from os import remove
 from datetime import datetime, timedelta
-import sys
-import os
 
 from src.helpers.textRecognition import textFromVideo, videoLength
-from src.helpers.file_helper import load_json, save_data_as_json
 
 class TeamsVideoFileProcessor:
+    processors = []
     def __init__(self, filename, base_path):
         if not str(filename).endswith('.mp4'):
             filename += '.mp4'
@@ -15,34 +16,39 @@ class TeamsVideoFileProcessor:
         self.date = None
         self.time = None
         self.filename = filename
+        self.basepath = base_path
         self.videoLength = None
         if not self.file.exists():
             raise Exception('File Does Not Exist at path {}'.format(base_path + "\\" + filename))
+
+    @staticmethod
+    def create(filename, base_path):
+        for processor in TeamsVideoFileProcessor.processors:
+            if processor.filename == filename and processor.basepath == base_path:
+                return processor
+        out = TeamsVideoFileProcessor(filename, base_path)
+        TeamsVideoFileProcessor.processors.append(out)
+        return out
+
+    @staticmethod
+    def delete(processor):
+        try:
+            remove(processor.base_path + "\\" + processor.filename)
+            TeamsVideoFileProcessor.processors.remove(processor)
+            return True
+        except:
+            return False
     
     def create_processed_data(self):
         if self.data == None:
-            dir = sys.path[0]
-            if not os.path.exists(dir + '\\cache.json'):
-                save_data_as_json('cache.json', dir, {})
-            
-            config = load_json('cache.json', dir, as_dict=True)
-            
-            if not str(self.file.absolute()) in config.keys():
-                ret = True
-                startFrame = 0
-                self.data = []
-                startTime = datetime.now()
-                while(ret and datetime.now() - startTime < timedelta(seconds=20)):
-                    ret, texts = textFromVideo(str(self.file.absolute()),['Microsoft Teams'],startFrame, startFrame + 10)
-                    self.data += texts
-                    startFrame += 10
-
-                config[str(self.file.absolute())] = self.data
-
-                save_data_as_json('cache.json',dir, config)
-            else:
-                self.data = config[str(self.file.absolute())]
-
+            ret = True
+            startFrame = 0
+            self.data = []
+            startTime = datetime.now()
+            while(ret and datetime.now() - startTime < timedelta(seconds=20)):
+                ret, texts = textFromVideo(str(self.file.absolute()),['Microsoft Teams'],startFrame, startFrame + 10)
+                self.data += texts
+                startFrame += 10
     
     def get_processed_data(self):
         self.create_processed_data()
@@ -137,9 +143,15 @@ class TeamsVideoFileProcessor:
         if not str(filename).endswith('.mp4'):
             filename += '.mp4'
         try:
-            self.file.rename(base_path + '\\' +  filename)
+            #self.file.rename(base_path + '\\' +  filename)
+            shutil.move(self.basepath + "\\" + self.filename,base_path + "\\" + filename)
+            self.basepath = base_path
             self.filename = filename
-            self.file = pathlib.Path(base_path+ '\\' + self.filename)
+            self.file = pathlib.Path(self.basepath + '\\' + self.filename)
         except Exception as e:
+            print(e)
             return e
         return None
+
+    def get_file_size(self):
+        return getsize(self.basepath + "\\" + self.filename)

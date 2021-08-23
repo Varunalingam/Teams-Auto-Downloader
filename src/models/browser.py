@@ -200,20 +200,22 @@ class Browser:
     def login(self):
         login_email = wait_until_found(self.browser, "input[type='email']", 30, try_untill_found=True)
         login_email.send_keys(self.email)
-
+        print("Sending Email")
         login_email = wait_until_found(self.browser, "input[type='email']", 5, try_untill_found=True)
         login_email.send_keys(Keys.ENTER)
 
         login_pwd = wait_until_found(self.browser, "input[type='password']", 10, try_untill_found=True)
         login_pwd.send_keys(self.password)
-
+        print("Sending Password")
         login_pwd = wait_until_found(self.browser, "input[type='password']", 5, try_untill_found=True)
         login_pwd.send_keys(Keys.ENTER)
 
-        keep_logged_in = wait_until_found(self.browser, "input[id='idBtn_Back']", 5)
+        print("Logged In Check")
+        keep_logged_in = wait_until_found(self.browser, "input[id='idBtn_Back']", 5, try_untill_found=False)
         if keep_logged_in is not None:
             keep_logged_in.click()
-            use_web_instead = wait_until_found(self.browser, ".use-app-lnk", 5, print_error=False)
+            print("Use Web Check")
+            use_web_instead = wait_until_found(self.browser, ".use-app-lnk", 5, print_error=False, try_untill_found=False)
             if use_web_instead is not None:
                 use_web_instead.click()
         else:
@@ -249,14 +251,16 @@ class Browser:
 
         self.login()
 
-        print("Waiting for correct page...", end='')
-        wait_until_found(self.browser, "#teams-app-bar", 60, try_untill_found=True)
+        print("Waiting for correct page...")
+        wait_until_found(self.browser, "#teams-app-bar", 5, try_untill_found=True)
 
         print('Webpage Found! Starting Processes')
         self.prepare_page()
 
     def check_for_downloads(self, team_name, date):
+        print(self.checked_teams)
         if team_name in self.checked_teams.keys():
+            print(self.checked_teams)
             return self.checked_teams
         
         teams = self.get_all_teams()
@@ -273,5 +277,5 @@ class Browser:
             for team in teams:
                 if not team.name in self.checked_teams.keys():
                     self.checked_teams[team.name] = team.expand_downloads(date)
-
+            print(self.checked_teams)
             return self.checked_teams

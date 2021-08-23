@@ -14,6 +14,7 @@ A python script to download teams video recordings and store to a location on yo
 2. Create `data.json` based on `data.json.example`
 3. Edit `src/helpers/textRecognition.py` for tesseract path
 4. Use the `autorun.bat` to schedule tasks in `Windows Task Scheduler`
+5. Don't delete the generated cache files.
 
 
 #### Contribution
