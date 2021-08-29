@@ -9,12 +9,12 @@ config = load_json('data.json', dir)
 cache = {}
 
 for team in config.local_teams_config:
-    if team.team_name not in cache.keys():
-        cache[team.team_name] = []
+    if team.team_code not in cache.keys():
+        cache[team.team_code] = []
     TeamsVideoFileProcessors = [TeamsVideoFileProcessor.create(file, config.base_save_path + team.team_save_location) for file in listdir(config.base_save_path + team.team_save_location) if file.endswith(".mp4")]
 
     for processor in TeamsVideoFileProcessors:
-        cache[team.team_name].append({"size" : str(processor.get_file_size()), "length" : str(processor.get_video_length()), "time" : str(processor.get_time())})
+        cache[team.team_code].append({"size" : str(processor.get_file_size()), "length" : str(processor.get_video_length()), "time" : str(processor.get_time())})
         print("Processed file : " +  processor.filename)
 
 save_cache(dir, cache)

@@ -42,6 +42,9 @@ class LocalTeam:
     def get_team_name(self):
         return self.data.team_name
 
+    def get_team_code(self):
+        return self.data.team_code
+
     def get_wait_untill_completed_property(self):
         return self.data.wait_untill_completed
 
@@ -95,9 +98,10 @@ class LocalTeam:
                             break
                         current_count -= 1
                     
-                    while current_count >= until_count:
+                    while current_count < until_count:
                         TeamsVideoFileProcessor.create(self.data.team_code + ' (' + str(index) + '.' + str(until_count) + ').mp4', path).relocate(self.data.team_code + ' (' + str(index) + '.' + str(until_count + 1) + ').mp4', path)
                         until_count -= 1
+                    file.relocate(self.data.team_code + ' (' + str(index) + "." + str(current_count + 1) + ').mp4' ,path)
             else:
                 replace_index = self.last_index
                 while replace_index >= 0:
@@ -256,9 +260,9 @@ class LocalTeamManager:
                     if match_q[key] > match_q[greatest]:
                         greatest = key
 
-            if not self.check_for_match(greatest.get_team_name(), processor):
+            if not self.check_for_match(greatest.get_team_code(), processor):
                 greatest.add_file(processor)
-                self.update_cache(processor, greatest.get_team_name())
+                self.update_cache(processor, greatest.get_team_code())
             else:
                 TeamsVideoFileProcessor.delete(processor)
                 
