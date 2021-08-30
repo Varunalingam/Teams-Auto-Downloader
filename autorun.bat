@@ -1,1 +1,1 @@
-"C:/Program Files/Python38/python.exe" "d:/Development/Drive/Personal/Python/Teams Download/main.py"
+"C:/Program Files/Python38/python.exe" "d:/Development/Teams Download/main.py"

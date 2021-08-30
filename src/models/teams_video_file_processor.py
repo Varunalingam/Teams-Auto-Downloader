@@ -33,10 +33,11 @@ class TeamsVideoFileProcessor:
     @staticmethod
     def delete(processor):
         try:
-            remove(processor.base_path + "\\" + processor.filename)
+            remove(processor.basepath + "\\" + processor.filename)
             TeamsVideoFileProcessor.processors.remove(processor)
             return True
-        except:
+        except Exception as e:
+            print(e)
             return False
     
     def create_processed_data(self):

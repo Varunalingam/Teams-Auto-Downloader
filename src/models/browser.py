@@ -3,10 +3,15 @@ from datetime import date, datetime, timedelta
 
 from selenium.common import exceptions
 from selenium import webdriver
+from selenium.webdriver.remote.webdriver import WebDriver
+from webdriver_manager import driver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 
 from src.helpers.browser_helper import wait_until_found
+
+import os
+from pathlib import Path
 
 class Channel:
     def __init__(self, name, c_id, browser, element):
@@ -25,8 +30,9 @@ class Channel:
 
 
 class Team:
-    def __init__(self, name, t_id, browser):
+    def __init__(self, name, t_id, browser, base_download_path):
         self.browser = browser
+        self.base_download_path = base_download_path
         self.name = name
         self.t_id = t_id
 
@@ -128,6 +134,32 @@ class Team:
                         for download in downloads:
                             download.click()
                             started_downloads += 1
+
+                        downloads_on_sep_page = chat.find_elements_by_css_selector('div.recording-button.inset-border.inset-border-themed')
+                        print(("Sep Donwloads Length", len(downloads_on_sep_page)))
+                        for download in downloads_on_sep_page:
+                            if (download.find_elements_by_class_name('recording-thumbnail')[0].get_attribute('title') == 'Play video'):
+                                download.click()
+                                self.browser.switch_to.window(self.browser.window_handles[1])
+                                print('waiting for external page to be ready')
+                                wait_until_found(self.browser, 'div.ms-OverflowSet-item.item-62',5,print_error=True, try_untill_found=True)
+                                print('external page ready')
+                                buttons = self.browser.find_elements_by_css_selector('button.ms-Button.ms-Button--commandBar.ms-CommandBarItem-link.root-74')
+                                for button in buttons:
+                                    if button.get_attribute('title') == 'Download':
+                                        start_time = time.time()
+                                        while len([f for f in os.listdir(self.base_download_path) if f.endswith(".mp4.crdownload") and Path(self.base_download_path + "\\" + f).stat().st_ctime >= start_time]) > 0:
+                                            None
+                                        start_time = time.time()
+                                        button.click()
+                                        while len([f for f in os.listdir(self.base_download_path) if f.endswith(".mp4.crdownload") and Path(self.base_download_path + "\\" + f).stat().st_ctime >= start_time]) == 0:
+                                            None 
+                                        print('Downloading from external page')
+                                        started_downloads += 1
+                                        break
+                                print('closing external page and switching back to old page')
+                                self.browser.close()
+                                self.browser.switch_to.window(self.browser.window_handles[0])
                         
                     except (exceptions.NoSuchElementException, exceptions.ElementNotInteractableException, exceptions.ElementClickInterceptedException):
                         pass
@@ -243,7 +275,7 @@ class Browser:
         team_headers = [team_elem.find_element_by_css_selector("h3") for team_elem in team_elems]
         team_ids = [team_header.get_attribute("id") for team_header in team_headers]
 
-        return [Team(team_names[i], team_ids[i], self.browser) for i in range(len(team_elems))]
+        return [Team(team_names[i], team_ids[i], self.browser, self.base_download_path) for i in range(len(team_elems))]
 
     def main(self):
         self.init_browser()
